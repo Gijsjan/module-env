@@ -28,9 +28,12 @@
           });
         });
         return this.subscribe('unauthorized', function() {
-          return _this.navigate('login', {
-            trigger: true
-          });
+          sessionStorage.clear();
+          if (Backbone.history.fragment !== 'login') {
+            return _this.navigate('login', {
+              trigger: true
+            });
+          }
         });
       };
 

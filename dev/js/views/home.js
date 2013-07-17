@@ -43,6 +43,12 @@
             return this.$('#results ul.results').append($('<li />').html(result.name));
           });
         });
+        facetedSearch.on('unauthorized', function() {
+          return _this.publish('unauthorized');
+        });
+        facetedSearch.on('all', function() {
+          return console.log('Module Env | FacetedSearch Event: ', arguments);
+        });
         return this;
       };
 
