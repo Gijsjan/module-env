@@ -33,4 +33,8 @@ define (require) ->
 				_.each results.results, (result) ->
 					@$('#results ul.results').append $('<li />').html result.name
 
+			facetedSearch.on 'unauthorized', => @publish 'unauthorized'
+
+			facetedSearch.on 'all', -> console.log 'Module Env | FacetedSearch Event: ', arguments
+
 			@

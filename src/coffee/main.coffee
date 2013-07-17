@@ -5,6 +5,8 @@ require.config
         'underscore': '../lib/underscore-amd/underscore'
         'backbone': '../lib/backbone-amd/backbone'
         'domready': '../lib/requirejs-domready/domReady'
+        'managers': '../lib/managers/dev'
+        'helpers': '../lib/helpers/dev'
         'text': '../lib/requirejs-text/text'
         'html': '../html'
 

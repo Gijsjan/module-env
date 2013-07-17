@@ -13,7 +13,9 @@ define (require) ->
 			_.extend @, Pubsub
 
 			@subscribe 'authorized', => @navigate '', trigger: true
-			@subscribe 'unauthorized', => @navigate 'login', trigger: true
+			@subscribe 'unauthorized', =>
+				sessionStorage.clear()
+				@navigate 'login', trigger: true if Backbone.history.fragment isnt 'login' # Check for current route cuz unauthorized can be fired multiple times (from multiple sources)
 
 		'routes':
 			'': 'home'
