@@ -3,7 +3,7 @@ staticDir = if port % 2 is 0 then 'dev' else 'stage' # If the port is an even nu
 
 _ = require 'underscore'
 
-express = require('express')
+express = require 'express'
 app = express()
 
 app.use express.static __dirname + '/' + staticDir

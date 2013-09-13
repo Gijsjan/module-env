@@ -22,16 +22,39 @@ define (require) ->
 			rtpl = _.template Templates.Home
 			@$el.html rtpl
 
+			console.log '!'
+
+			# facetedSearch = new Views.FacetedSearch
+			# 	el: @$('#placeholder')
+			# 	baseUrl: 'http://demo17.huygens.knaw.nl/'
+			# 	searchUrl: 'repository/search'
+			# 	queryOptions:
+			# 		term: '*'
+			# 		typeString: 'atlgarchive'
+			# 		sort: 'id'
 			facetedSearch = new Views.FacetedSearch
 				el: @$('#placeholder')
 				baseUrl: config.baseUrl
-				searchUrl: 'projects/32/search'
+				searchPath: 'projects/32/search'
 				token: token.get()
+				textSearchOptions:
+					term: '*'
+					# searchInAnnotations: false
+					# searchInTranscriptions: true
+					# textLayers: ['Diplomatic', 'Critical', 'Translation', 'Comments']
 
 			facetedSearch.on 'faceted-search:results', (results) =>
 				@$('#results ul.results').html ''
 				_.each results.results, (result) ->
 					@$('#results ul.results').append $('<li />').html result.name
+				
+				prev = $('<button />').html 'prev'
+				prev.click (ev) => facetedSearch.prev()
+				next = $('<button />').html 'next'
+				next.click (ev) => facetedSearch.next()
+
+				@$('#results ul.results').append prev
+				@$('#results ul.results').append next
 
 			facetedSearch.on 'unauthorized', => @publish 'unauthorized'
 

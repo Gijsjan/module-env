@@ -1,3 +1,38 @@
+fs = require 'fs'
+path = require 'path'
+
+connect_middleware = (connect, options) ->
+	[
+		(req, res, next) ->
+			contentTypesMap =
+				'.html': 'text/html'
+				'.css': 'text/css'
+				'.js': 'application/javascript'
+				'.map': 'application/javascript' # js source maps
+				'.gif': 'image/gif'
+				'.jpg': 'image/jpeg'
+				'.jpeg': 'image/jpeg'
+				'.png': 'image/png'
+				'.ico': 'image/x-icon'
+			
+			sendFile = (reqUrl) ->
+				filePath = path.join options.base, reqUrl
+				
+				res.writeHead 200,
+					'Content-Type': contentTypesMap[extName] || 'text/html'
+					'Content-Length': fs.statSync(filePath).size
+
+				readStream = fs.createReadStream filePath
+				readStream.pipe res
+			
+			extName = path.extname req.url
+
+			if contentTypesMap[extName]?
+				sendFile req.url
+			else
+				sendFile 'index.html'
+	]
+
 module.exports = (grunt) ->
 
 	##############
@@ -5,6 +40,37 @@ module.exports = (grunt) ->
 	##############
 
 	grunt.initConfig
+	
+		createSymlinks:
+			dev: [
+				src: 'images'
+				dest: 'dev/images'
+			,
+				src: '/home/gijs/Projects/faceted-search'
+				dest: 'dev/lib/faceted-search'
+			,
+				src: '/home/gijs/Projects/faceted-search/images'
+				dest: 'images/faceted-search'
+			]
+			stage: [{
+				src: 'images'
+				dest: 'stage/images'
+			}]
+
+		connect:
+			dev:
+				options:
+					port: 3000
+					base: 'dev'
+					middleware: connect_middleware
+					keepalive: true
+			# stage:
+			# 	options:
+			# 		port: 8001
+			# 		base: 'dev'
+			# 		middleware: connect_middleware
+
+
 		shell:
 			'mocha-phantomjs': 
 				command: 'mocha-phantomjs -R dot http://localhost:8000/.test/index.html'
@@ -175,6 +241,7 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks 'grunt-contrib-uglify'
 	grunt.loadNpmTasks 'grunt-contrib-cssmin'
 	grunt.loadNpmTasks 'grunt-contrib-concat'
+	grunt.loadNpmTasks 'grunt-contrib-connect'
 	grunt.loadNpmTasks 'grunt-shell'
 	grunt.loadNpmTasks 'grunt-text-replace'
 
@@ -190,6 +257,10 @@ module.exports = (grunt) ->
 		'shell:symlink_dev_images' # Symlink from images/ to dev/images
 	]
 
+	grunt.registerTask 'server', [
+		'connect'
+	]
+
 	# Build dev/ to stage/ (empty dir, run r.js)
 	# grunt.registerTask 'build', [
 	# 	'shell:emptystage'
@@ -197,6 +268,21 @@ module.exports = (grunt) ->
 	# 	'shell:symlink_stage_images'
 	# 	'requirejs:compile' # Run r.js
 	# ]
+
+	grunt.registerMultiTask 'createSymlinks', 'Creates a symlink', ->
+		for own index, config of this.data
+			src = if config.src[0] isnt '/' then process.cwd() + '/' + config.src else config.src
+			dest = if config.dest[0] isnt '/' then process.cwd() + '/' + config.dest else config.dest
+
+			grunt.log.writeln 'ERROR: source dir does not exist!' if not fs.existsSync(src) # Without a source, all is lost.
+
+			if fs.existsSync(dest)
+				stats = fs.lstatSync dest
+				
+				if stats? and stats.isSymbolicLink()
+					fs.unlinkSync dest
+
+			fs.symlinkSync src, dest
 
 
 

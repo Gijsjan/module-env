@@ -1,0 +1,31 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'start' ]
+2 info using npm@1.2.15
+3 info using node@v0.10.2
+4 verbose node symlink /usr/local/bin/node
+5 verbose read json /home/gijs/Projects/module-env/package.json
+6 warn package.json faceted-search@0.0.0 No README.md file found!
+7 verbose run-script [ 'prestart', 'start', 'poststart' ]
+8 info prestart faceted-search@0.0.0
+9 info start faceted-search@0.0.0
+10 verbose unsafe-perm in lifecycle true
+11 silly exec sh "-c" "coffee ./server.coffee 3000"
+12 silly sh,-c,coffee ./server.coffee 3000,/home/gijs/Projects/module-env spawning
+13 info faceted-search@0.0.0 Failed to exec start script
+14 error faceted-search@0.0.0 start: `coffee ./server.coffee 3000`
+14 error `sh "-c" "coffee ./server.coffee 3000"` failed with 8
+15 error Failed at the faceted-search@0.0.0 start script.
+15 error This is most likely a problem with the faceted-search package,
+15 error not with npm itself.
+15 error Tell the author that this fails on your system:
+15 error     coffee ./server.coffee 3000
+15 error You can get their info via:
+15 error     npm owner ls faceted-search
+15 error There is likely additional logging output above.
+16 error System Linux 3.5.0-17-generic
+17 error command "/usr/local/bin/node" "/usr/local/bin/npm" "start"
+18 error cwd /home/gijs/Projects/module-env
+19 error node -v v0.10.2
+20 error npm -v 1.2.15
+21 error code ELIFECYCLE
+22 verbose exit [ 1, true ]
