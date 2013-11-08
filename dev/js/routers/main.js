@@ -39,7 +39,8 @@
 
       MainRouter.prototype['routes'] = {
         '': 'home',
-        'login': 'login'
+        'login': 'login',
+        'form': 'form'
       };
 
       MainRouter.prototype.home = function() {
@@ -48,6 +49,10 @@
 
       MainRouter.prototype.login = function() {
         return viewManager.show(Views.Login);
+      };
+
+      MainRouter.prototype.form = function() {
+        return console.log('formsst');
       };
 
       return MainRouter;

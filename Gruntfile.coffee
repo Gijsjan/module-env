@@ -4,7 +4,7 @@ path = require 'path'
 connect_middleware = (connect, options) ->
 	[
 		(req, res, next) ->
-			contentTypesMap =
+			contentTypeMap =
 				'.html': 'text/html'
 				'.css': 'text/css'
 				'.js': 'application/javascript'
@@ -19,7 +19,7 @@ connect_middleware = (connect, options) ->
 				filePath = path.join options.base, reqUrl
 				
 				res.writeHead 200,
-					'Content-Type': contentTypesMap[extName] || 'text/html'
+					'Content-Type': contentTypeMap[extName] || 'text/html'
 					'Content-Length': fs.statSync(filePath).size
 
 				readStream = fs.createReadStream filePath
@@ -27,7 +27,10 @@ connect_middleware = (connect, options) ->
 			
 			extName = path.extname req.url
 
-			if contentTypesMap[extName]?
+			# If request is a file and it doesnt exist, pass req to connect
+			if contentTypeMap[extName]? and not fs.existsSync(options.base + req.url)
+				next()
+			else if contentTypeMap[extName]?
 				sendFile req.url
 			else
 				sendFile 'index.html'
@@ -130,7 +133,7 @@ module.exports = (grunt) ->
 					'.test/tests.js': ['.test/head.coffee', 'test/**/*.coffee']
 			compile:
 				options:
-					bare: false # UglyHack: set a property to its default value to be able to call coffee:compile
+					bare: true # UglyHack: set a property to its default value to be able to call coffee:compile
 
 		jade:
 			init:
@@ -210,18 +213,18 @@ module.exports = (grunt) ->
 						endFile: 'wrap.end.js'
 
 		watch:
-			options:
-				livereload: true
-				nospawn: true
+			# options:
+			# 	livereload: true
+			# 	nospawn: true
 			coffeetest:
 				files: 'test/**/*.coffee'
 				tasks: ['coffee:test', 'shell:mocha-phantomjs']
 			coffee:
 				files: 'src/coffee/**/*.coffee'
-				tasks: ['coffee:compile']
+				tasks: 'coffee:init'
 			jade:
 				files: ['src/index.jade', 'src/jade/**/*.jade']
-				tasks: ['jade:compile']
+				tasks: ['jade:init']
 			stylus:
 				files: ['src/stylus/**/*.styl']
 				tasks: ['stylus:compile']
@@ -247,19 +250,23 @@ module.exports = (grunt) ->
 
 	grunt.registerTask('default', ['shell:mocha-phantomjs']);
 
+	grunt.registerTask 'w', 'watch'
+
 	# Compile src/ to dev/ (empty dir, install deps, compile coffee, jade, stylus)
+	grunt.registerTask 'c', 'compile'
 	grunt.registerTask 'compile', [
 		'shell:emptydev' # rm -rf dev/
 		'shell:bowerinstall' # Get dependencies first, cuz css needs to be included (and maybe images?)
 		'coffee:init'
 		'jade:init'
 		'stylus:compile'
-		'shell:symlink_dev_images' # Symlink from images/ to dev/images
+		# 'shell:symlink_dev_images' # Symlink from images/ to dev/images
+		'createSymlinks:dev'
 	]
 
-	grunt.registerTask 'server', [
-		'connect'
-	]
+	grunt.registerTask 's', 'connect'
+
+	grunt.registerTask 'server', 'connect'
 
 	# Build dev/ to stage/ (empty dir, run r.js)
 	# grunt.registerTask 'build', [
@@ -268,6 +275,8 @@ module.exports = (grunt) ->
 	# 	'shell:symlink_stage_images'
 	# 	'requirejs:compile' # Run r.js
 	# ]
+
+	grunt.registerTask 'myTask', 'do task', -> console.log 'In my task'
 
 	grunt.registerMultiTask 'createSymlinks', 'Creates a symlink', ->
 		for own index, config of this.data
@@ -297,15 +306,16 @@ module.exports = (grunt) ->
 
 			if type is 'coffee'
 				testDestPath = srcPath.replace 'src/coffee', 'test'
-				destPath = 'dev'+srcPath.replace(new RegExp(type, 'g'), 'js').substr(3);
+				destPath = 'dev'+srcPath.replace(new RegExp(type, 'g'), 'js').substr 3
 
 			if type is 'jade'
-				destPath = 'dev'+srcPath.replace(new RegExp(type, 'g'), 'html').substr(3);
+				destPath = 'dev'+srcPath.replace(new RegExp(type, 'g'), 'html').substr 3
 
 			if type? and action is 'changed' or action is 'added'
 				data = {}
 				data[destPath] = srcPath
 
+				console.log type, data
 				grunt.config [type, 'compile', 'files'], data
 				grunt.file.copy '.test/template.coffee', testDestPath if testDestPath? and not grunt.file.exists(testDestPath)
 

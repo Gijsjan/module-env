@@ -20,9 +20,13 @@ define (require) ->
 		'routes':
 			'': 'home'
 			'login': 'login'
+			'form': 'form'
 
 		home: ->
 			viewManager.show Views.Home
 
 		login: ->
 			viewManager.show Views.Login
+
+		form: ->
+			console.log 'formsst'

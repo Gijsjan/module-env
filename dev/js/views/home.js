@@ -27,12 +27,11 @@
       };
 
       Home.prototype.render = function() {
-        var facetedSearch, rtpl,
+        var rtpl,
           _this = this;
         rtpl = _.template(Templates.Home);
         this.$el.html(rtpl);
-        console.log('!');
-        facetedSearch = new Views.FacetedSearch({
+        this.facetedSearch = new Views.FacetedSearch({
           el: this.$('#placeholder'),
           baseUrl: config.baseUrl,
           searchPath: 'projects/32/search',
@@ -41,30 +40,36 @@
             term: '*'
           }
         });
-        facetedSearch.on('faceted-search:results', function(results) {
+        this.facetedSearch.on('results:change', function(results) {
           var next, prev;
           _this.$('#results ul.results').html('');
-          _.each(results.results, function(result) {
+          _.each(results.get('results'), function(result) {
             return this.$('#results ul.results').append($('<li />').html(result.name));
           });
           prev = $('<button />').html('prev');
           prev.click(function(ev) {
-            return facetedSearch.prev();
+            return _this.facetedSearch.prev();
           });
           next = $('<button />').html('next');
           next.click(function(ev) {
-            return facetedSearch.next();
+            return _this.facetedSearch.next();
           });
           _this.$('#results ul.results').append(prev);
           return _this.$('#results ul.results').append(next);
         });
-        facetedSearch.on('unauthorized', function() {
+        this.facetedSearch.on('unauthorized', function() {
           return _this.publish('unauthorized');
         });
-        facetedSearch.on('all', function() {
+        this.facetedSearch.on('all', function() {
           return console.log('Module Env | FacetedSearch Event: ', arguments);
         });
         return this;
+      };
+
+      Home.prototype.events = {
+        'click button.reset': function(ev) {
+          return this.facetedSearch.reset();
+        }
       };
 
       return Home;

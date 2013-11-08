@@ -22,8 +22,6 @@ define (require) ->
 			rtpl = _.template Templates.Home
 			@$el.html rtpl
 
-			console.log '!'
-
 			# facetedSearch = new Views.FacetedSearch
 			# 	el: @$('#placeholder')
 			# 	baseUrl: 'http://demo17.huygens.knaw.nl/'
@@ -32,7 +30,7 @@ define (require) ->
 			# 		term: '*'
 			# 		typeString: 'atlgarchive'
 			# 		sort: 'id'
-			facetedSearch = new Views.FacetedSearch
+			@facetedSearch = new Views.FacetedSearch
 				el: @$('#placeholder')
 				baseUrl: config.baseUrl
 				searchPath: 'projects/32/search'
@@ -43,21 +41,25 @@ define (require) ->
 					# searchInTranscriptions: true
 					# textLayers: ['Diplomatic', 'Critical', 'Translation', 'Comments']
 
-			facetedSearch.on 'faceted-search:results', (results) =>
+			@facetedSearch.on 'results:change', (results) =>
 				@$('#results ul.results').html ''
-				_.each results.results, (result) ->
+				_.each results.get('results'), (result) ->
 					@$('#results ul.results').append $('<li />').html result.name
 				
 				prev = $('<button />').html 'prev'
-				prev.click (ev) => facetedSearch.prev()
+				prev.click (ev) => @facetedSearch.prev()
 				next = $('<button />').html 'next'
-				next.click (ev) => facetedSearch.next()
+				next.click (ev) => @facetedSearch.next()
 
 				@$('#results ul.results').append prev
 				@$('#results ul.results').append next
 
-			facetedSearch.on 'unauthorized', => @publish 'unauthorized'
+			@facetedSearch.on 'unauthorized', => @publish 'unauthorized'
 
-			facetedSearch.on 'all', -> console.log 'Module Env | FacetedSearch Event: ', arguments
+			@facetedSearch.on 'all', -> console.log 'Module Env | FacetedSearch Event: ', arguments
 
 			@
+
+		# ### Events
+		events:
+			'click button.reset': (ev) -> @facetedSearch.reset()
