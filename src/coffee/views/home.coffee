@@ -37,9 +37,9 @@ define (require) ->
 				token: token.get()
 				textSearchOptions:
 					term: '*'
-					# searchInAnnotations: false
-					# searchInTranscriptions: true
-					# textLayers: ['Diplomatic', 'Critical', 'Translation', 'Comments']
+					searchInAnnotations: false
+					searchInTranscriptions: false
+					textLayers: ['Diplomatic', 'Critical', 'Translation', 'Comments']
 
 			@facetedSearch.on 'results:change', (results) =>
 				@$('#results ul.results').html ''

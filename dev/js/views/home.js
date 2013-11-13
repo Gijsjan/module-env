@@ -37,7 +37,10 @@
           searchPath: 'projects/32/search',
           token: token.get(),
           textSearchOptions: {
-            term: '*'
+            term: '*',
+            searchInAnnotations: false,
+            searchInTranscriptions: false,
+            textLayers: ['Diplomatic', 'Critical', 'Translation', 'Comments']
           }
         });
         this.facetedSearch.on('results:change', function(results) {

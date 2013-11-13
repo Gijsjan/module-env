@@ -6,6 +6,7 @@ define (require) ->
 	Views =
 		Home: require 'views/home'
 		Login: require 'views/login'
+		Highlighter: require 'views/hilib/highlighter'
 
 	class MainRouter extends Backbone.Router
 
@@ -21,6 +22,7 @@ define (require) ->
 			'': 'home'
 			'login': 'login'
 			'form': 'form'
+			'hilib/highlighter': 'highlighter'
 
 		home: ->
 			viewManager.show Views.Home
@@ -30,3 +32,6 @@ define (require) ->
 
 		form: ->
 			console.log 'formsst'
+
+		highlighter: ->
+			viewManager.show Views.Highlighter

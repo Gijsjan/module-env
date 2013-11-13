@@ -8,6 +8,7 @@
       'domready': '../lib/requirejs-domready/domReady',
       'managers': '../lib/managers/dev',
       'helpers': '../lib/helpers/dev',
+      'hilib': '../lib/hilib/compiled',
       'text': '../lib/requirejs-text/text',
       'html': '../html'
     },

@@ -9,7 +9,8 @@
     Pubsub = require('pubsub');
     Views = {
       Home: require('views/home'),
-      Login: require('views/login')
+      Login: require('views/login'),
+      Highlighter: require('views/hilib/highlighter')
     };
     return MainRouter = (function(_super) {
       __extends(MainRouter, _super);
@@ -40,7 +41,8 @@
       MainRouter.prototype['routes'] = {
         '': 'home',
         'login': 'login',
-        'form': 'form'
+        'form': 'form',
+        'hilib/highlighter': 'highlighter'
       };
 
       MainRouter.prototype.home = function() {
@@ -53,6 +55,10 @@
 
       MainRouter.prototype.form = function() {
         return console.log('formsst');
+      };
+
+      MainRouter.prototype.highlighter = function() {
+        return viewManager.show(Views.Highlighter);
       };
 
       return MainRouter;
