@@ -5,10 +5,10 @@ require.config
         'underscore': '../lib/underscore-amd/underscore'
         'backbone': '../lib/backbone-amd/backbone'
         'domready': '../lib/requirejs-domready/domReady'
-        'managers': '../lib/managers/dev'
-        'helpers': '../lib/helpers/dev'
         'hilib': '../lib/hilib/compiled'
-        'text': '../lib/requirejs-text/text'
+        # 'text': '../lib/requirejs-text/text'
+        'tpls': '../templates'
+        'jade': '../lib/jade/runtime'
         'html': '../html'
 
     shim:

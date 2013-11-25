@@ -303,3 +303,12 @@
   });
 
 }).call(this);
+
+(function() {
+  describe("", function() {
+    return describe("", function() {
+      return it("", function() {});
+    });
+  });
+
+}).call(this);

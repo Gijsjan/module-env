@@ -1,42 +1,8 @@
-fs = require 'fs'
-path = require 'path'
-
-connect_middleware = (connect, options) ->
-	[
-		(req, res, next) ->
-			contentTypeMap =
-				'.html': 'text/html'
-				'.css': 'text/css'
-				'.js': 'application/javascript'
-				'.map': 'application/javascript' # js source maps
-				'.gif': 'image/gif'
-				'.jpg': 'image/jpeg'
-				'.jpeg': 'image/jpeg'
-				'.png': 'image/png'
-				'.ico': 'image/x-icon'
-			
-			sendFile = (reqUrl) ->
-				filePath = path.join options.base, reqUrl
-				
-				res.writeHead 200,
-					'Content-Type': contentTypeMap[extName] || 'text/html'
-					'Content-Length': fs.statSync(filePath).size
-
-				readStream = fs.createReadStream filePath
-				readStream.pipe res
-			
-			extName = path.extname req.url
-
-			# If request is a file and it doesnt exist, pass req to connect
-			if contentTypeMap[extName]? and not fs.existsSync(options.base + req.url)
-				next()
-			else if contentTypeMap[extName]?
-				sendFile req.url
-			else
-				sendFile 'index.html'
-	]
+connect_middleware = require 'my-grunt-modules/connect-middleware'
 
 module.exports = (grunt) ->
+	require('load-grunt-tasks') grunt
+	require('my-grunt-modules/create-symlinks') grunt
 
 	##############
 	### CONFIG ###
@@ -45,18 +11,18 @@ module.exports = (grunt) ->
 	grunt.initConfig
 	
 		createSymlinks:
-			dev: [
+			compiled: [
 				src: 'images'
-				dest: 'dev/images'
+				dest: 'compiled/images'
 			,
 				src: '/home/gijs/Projects/faceted-search'
-				dest: 'dev/lib/faceted-search'
+				dest: 'compiled/lib/faceted-search'
 			,
 				src: '/home/gijs/Projects/faceted-search/images'
 				dest: 'images/faceted-search'
 			,
 				src: '/home/gijs/Projects/hilib'
-				dest: 'dev/lib/hilib'
+				dest: 'compiled/lib/hilib'
 			]
 			stage: [{
 				src: 'images'
@@ -64,16 +30,16 @@ module.exports = (grunt) ->
 			}]
 
 		connect:
-			dev:
+			compiled:
 				options:
 					port: 3000
-					base: 'dev'
+					base: 'compiled'
 					middleware: connect_middleware
 					keepalive: true
 			# stage:
 			# 	options:
 			# 		port: 8001
-			# 		base: 'dev'
+			# 		base: 'compiled'
 			# 		middleware: connect_middleware
 
 
@@ -88,9 +54,9 @@ module.exports = (grunt) ->
 				command:
 					'rm -rf stage/*'
 
-			emptydev:
+			emptycompiled:
 				command:
-					'rm -rf dev/*'
+					'rm -rf compiled/*'
 
 			# rsync:
 			# 	command:
@@ -98,9 +64,9 @@ module.exports = (grunt) ->
 			# 	options:
 			# 		stdout: true
 
-			symlink_dev_images:
+			symlink_compiled_images:
 				command: [
-					'cd dev'
+					'cd compiled'
 					'ln -s ../images images'
 				].join '&&'
 				
@@ -122,7 +88,7 @@ module.exports = (grunt) ->
 					expand: true
 					cwd: 'src/coffee'
 					src: '**/*.coffee'
-					dest: 'dev/js'
+					dest: 'compiled/js'
 					rename: (dest, src) -> 
 						dest + '/' + src.replace(/.coffee/, '.js') # Use rename to preserve multiple dots in filenames (nav.user.coffee => nav.user.js)
 				,
@@ -139,20 +105,15 @@ module.exports = (grunt) ->
 					bare: true # UglyHack: set a property to its default value to be able to call coffee:compile
 
 		jade:
-			init:
-				files: [
-					expand: true
-					cwd: 'src/jade'
-					src: '**/*.jade'
-					dest: 'dev/html'
-					rename: (dest, src) -> 
-						dest + '/' + src.replace(/.jade/, '.html') # Use rename to preserve multiple dots in filenames (nav.user.coffee => nav.user.js)
-				,
-					'dev/index.html': 'src/index.jade'
-				]
+			index:
+				files: 'compiled/index.html': 'src/index.jade'
 			compile:
+				files: 'compiled/templates.js': 'src/jade/**/*.jade'
 				options:
-					pretty: true
+					compileDebug: false
+					client: true
+					amd: true
+					processName: (filename) -> filename.substring(9, filename.length-5)
 
 		stylus:
 			compile:
@@ -160,31 +121,32 @@ module.exports = (grunt) ->
 					paths: ['src/stylus/import']
 					import: ['variables', 'functions']
 				files:
-					'dev/css/main.css': [
+					'compiled/css/project.css': [
 						'src/stylus/**/*.styl'
 						'!src/stylus/import/*.styl'
 					]
 		
-		# concat:
-		# 	css:
-		# 		src: [
-		# 			'dev/lib/normalize-css/normalize.css'
-		# 			'dev/css/project.css'
-		# 			'dev/lib/faceted-search/dev/css/main.css'
-		# 		]
-		# 		dest:
-		# 			'dev/css/main.css'
+		concat:
+			css:
+				src: [
+					'compiled/lib/normalize-css/normalize.css'
+					'compiled/css/project.css'
+					'compiled/lib/faceted-search/compiled/css/main.css'
+					'compiled/lib/hilib/compiled/**/*.css'
+				]
+				dest:
+					'compiled/css/main.css'
 
 		cssmin:
 			stage:
 				files:
 					'stage/css/main.css': [
-						'dev/css/main.css'
+						'compiled/css/main.css'
 					]
 
 		# replace:
 		# 	html:
-		# 		src: 'dev/index.html'
+		# 		src: 'compiled/index.html'
 		# 		dest: 'stage/index.html'
 		# 		replacements: [
 		# 			from: '<script data-main="/js/main" src="/lib/requirejs/require.js"></script>'
@@ -194,7 +156,7 @@ module.exports = (grunt) ->
 		requirejs:
 			compile:
 				options:
-					baseUrl: "dev/js"
+					baseUrl: "compiled/js"
 					name: '../lib/almond/almond'
 					include: 'main'
 					# insertRequire: ['main']
@@ -207,8 +169,8 @@ module.exports = (grunt) ->
 						'underscore': '../lib/underscore-amd/underscore'
 						'backbone': '../lib/backbone-amd/backbone'
 						'text': '../lib/requirejs-text/text'
-						'managers': '../lib/managers/dev'
-						'helpers': '../lib/helpers/dev'
+						'managers': '../lib/managers/compiled'
+						'helpers': '../lib/helpers/compiled'
 						'html': '../html'
 					# wrap: true
 					wrap:
@@ -227,10 +189,13 @@ module.exports = (grunt) ->
 				tasks: 'coffee:init'
 			jade:
 				files: ['src/index.jade', 'src/jade/**/*.jade']
-				tasks: ['jade:init']
+				tasks: ['jade']
 			stylus:
 				files: ['src/stylus/**/*.styl']
-				tasks: ['stylus:compile']
+				tasks: ['stylus', 'concat']
+			css:
+				files: ['compiled/lib/hilib/touch/css']
+				tasks: ['concat:css']
 
 
 
@@ -255,83 +220,18 @@ module.exports = (grunt) ->
 
 	grunt.registerTask 'w', 'watch'
 
-	# Compile src/ to dev/ (empty dir, install deps, compile coffee, jade, stylus)
+	# Compile src/ to compiled/ (empty dir, install deps, compile coffee, jade, stylus)
 	grunt.registerTask 'c', 'compile'
 	grunt.registerTask 'compile', [
-		'shell:emptydev' # rm -rf dev/
+		'shell:emptycompiled' # rm -rf compiled/
 		'shell:bowerinstall' # Get dependencies first, cuz css needs to be included (and maybe images?)
 		'coffee:init'
-		'jade:init'
+		'jade'
 		'stylus:compile'
-		# 'shell:symlink_dev_images' # Symlink from images/ to dev/images
-		'createSymlinks:dev'
+		# 'shell:symlink_compiled_images' # Symlink from images/ to compiled/images
+		'createSymlinks:compiled'
 	]
 
 	grunt.registerTask 's', 'connect'
 
 	grunt.registerTask 'server', 'connect'
-
-	# Build dev/ to stage/ (empty dir, run r.js)
-	# grunt.registerTask 'build', [
-	# 	'shell:emptystage'
-	# 	'cssmin:stage'
-	# 	'shell:symlink_stage_images'
-	# 	'requirejs:compile' # Run r.js
-	# ]
-
-	grunt.registerTask 'myTask', 'do task', -> console.log 'In my task'
-
-	grunt.registerMultiTask 'createSymlinks', 'Creates a symlink', ->
-		for own index, config of this.data
-
-			src = config.src
-			dest = config.dest
-
-			src = process.env.HOME + src.substr(1) if src[0] is '~'
-			dest = process.env.HOME + dest.substr(1) if dest[0] is '~'
-
-			src = process.cwd() + '/' + src if src[0] isnt '/'
-			dest = process.cwd() + '/' + dest if dest[0] isnt '/'
-
-			grunt.log.writeln 'ERROR: source dir does not exist!' if not fs.existsSync(src) # Without a source, all is lost.
-
-			# We have to put lstatSync in a try, because it gives an error when dest isn't found. We can use fs.lstat, but
-			# we would have to change the for loop to a function call.			
-			try 
-				stats = fs.lstatSync dest
-				fs.unlinkSync(dest) if stats.isSymbolicLink()
-
-			fs.symlinkSync src, dest
-
-
-
-	##############
-	### EVENTS ###
-	##############
-
-	grunt.event.on 'watch', (action, srcPath) ->
-		if srcPath.substr(0, 3) is 'src' # Make sure file comes from src/		
-			type = 'coffee' if srcPath.substr(-7) is '.coffee'
-			type = 'jade' if srcPath.substr(-5) is '.jade'
-
-			if type is 'coffee'
-				testDestPath = srcPath.replace 'src/coffee', 'test'
-				destPath = 'dev'+srcPath.replace(new RegExp(type, 'g'), 'js').substr 3
-
-			if type is 'jade'
-				destPath = 'dev'+srcPath.replace(new RegExp(type, 'g'), 'html').substr 3
-
-			if type? and action is 'changed' or action is 'added'
-				data = {}
-				data[destPath] = srcPath
-
-				console.log type, data
-				grunt.config [type, 'compile', 'files'], data
-				grunt.file.copy '.test/template.coffee', testDestPath if testDestPath? and not grunt.file.exists(testDestPath)
-
-			if type? and action is 'deleted'
-				grunt.file.delete destPath
-				grunt.file.delete testDestPath
-
-		if srcPath.substr(0, 4) is 'test' and action is 'added'
-			return false

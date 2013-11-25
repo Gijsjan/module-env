@@ -2,14 +2,13 @@ define (require) ->
 
 	config = require 'config'
 
-	token = require 'managers/token'
+	token = require 'hilib/managers/token'
 
 	Views =
 		Base: require 'views/base'
 		FacetedSearch: require 'faceted-search'
 
-	Templates =
-		Home: require 'text!html/home.html'
+	tpls = require 'tpls'
 
 	class Home extends Views.Base
 
@@ -19,7 +18,7 @@ define (require) ->
 			@render()
 
 		render: ->
-			rtpl = _.template Templates.Home
+			rtpl = tpls['home']()
 			@$el.html rtpl
 
 			# facetedSearch = new Views.FacetedSearch
@@ -33,7 +32,7 @@ define (require) ->
 			@facetedSearch = new Views.FacetedSearch
 				el: @$('#placeholder')
 				baseUrl: config.baseUrl
-				searchPath: 'projects/32/search'
+				searchPath: 'projects/16/search'
 				token: token.get()
 				textSearchOptions:
 					term: '*'
