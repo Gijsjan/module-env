@@ -1,6 +1,7 @@
 define (require) ->
 
 	viewManager = require 'hilib/managers/view'
+	jsoneditor = require 'jsoneditor'
 
 	Views =
 		Base: require 'views/base'
@@ -15,6 +16,8 @@ define (require) ->
 		initialize: ->
 			super
 
+
+
 			@render()
 
 		render: ->
@@ -24,6 +27,9 @@ define (require) ->
 			@renderAutocompletes()
 			@renderEditablelists()
 			@renderCombolists()
+
+
+			@editor = new jsoneditor.JSONEditor @el.querySelector('.response')
 			
 			@
 
@@ -34,7 +40,8 @@ define (require) ->
 				config:
 					data: ['Gijs', 'Jona', 'Bram', 'Hayco', 'Martijn', 'Meindert']
 
-			@listenTo autosuggest, 'change', (changes) -> console.log changes
+			@listenTo autosuggest, 'change', (changes) => @editor.set changes
+
 
 			# ADVANCED
 			autosuggest = viewManager.show @el.querySelector('.advanced-autosuggest-placeholder'), Views.Autosuggest,
@@ -48,15 +55,15 @@ define (require) ->
 						confirmRemove: true
 
 
-			@listenTo autosuggest, 'change', (changes) -> console.log changes
-			@listenTo autosuggest, 'edit', (model) -> console.log model
+			@listenTo autosuggest, 'change', (changes) => @editor.set changes
+			@listenTo autosuggest, 'edit', (response) => @editor.set response
 
 		renderEditablelists: ->
 			# DEFAULT
 			editablelist = viewManager.show @el.querySelector('.editablelist-placeholder'), Views.Editablelist,
 				value: ['Gijs', 'Jona', 'Bram', 'Hayco', 'Martijn', 'Meindert']
 
-			@listenTo editablelist, 'change', (changes) -> console.log changes
+			@listenTo editablelist, 'change', (changes) -> @editor.set changes
 
 			# ADVANCED
 			editablelist = viewManager.show @el.querySelector('.advanced-editablelist-placeholder'), Views.Editablelist,
@@ -66,7 +73,7 @@ define (require) ->
 						placeholder: 'Add colleague'
 						confirmRemove: true
 
-			@listenTo editablelist, 'change', (changes) -> console.log changes
+			@listenTo editablelist, 'change', (changes) -> @editor.set changes
 			@listenTo editablelist, 'confirmRemove', (id, confirm) =>
 				confirm() if window.confirm('Removing '+id+', sure?')
 
@@ -77,7 +84,7 @@ define (require) ->
 				config:
 					data: ['Gijs', 'Jona', 'Bram', 'Hayco', 'Martijn', 'Meindert']
 
-			@listenTo combolist, 'change', (changes) -> console.log changes
+			@listenTo combolist, 'change', (changes) -> @editor.set changes
 
 			# ADVANCED
 			combolist = viewManager.show @el.querySelector('.advanced-combolist-placeholder'), Views.Combolist,
@@ -89,6 +96,6 @@ define (require) ->
 						mutable: true
 						confirmRemove: true
 
-			@listenTo combolist, 'change', (changes) -> console.log changes
+			@listenTo combolist, 'change', (changes) -> @editor.set changes
 			@listenTo combolist, 'confirmRemove', (id, confirm) =>
 				confirm() if window.confirm('Removing '+id+', sure?')

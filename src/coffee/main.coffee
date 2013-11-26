@@ -7,6 +7,7 @@ require.config
         'domready': '../lib/requirejs-domready/domReady'
         'hilib': '../lib/hilib/compiled'
         # 'text': '../lib/requirejs-text/text'
+        'jsoneditor': '../lib/jsoneditor/jsoneditor'
         'tpls': '../templates'
         'jade': '../lib/jade/runtime'
         'html': '../html'

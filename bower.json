@@ -9,7 +9,8 @@
     "underscore-amd": "*",
     "backbone-amd": "1.0.x",
     "jade": "*",
-    "normalize-css": "*"
+    "normalize-css": "*",
+    "jsoneditor": "*"
   },
   "devDependencies": {
     "mocha": "*",
