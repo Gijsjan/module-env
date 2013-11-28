@@ -7,7 +7,7 @@ define (require) ->
 	
 	class Login extends BaseView
 
-		className: 'row span3'
+		# className: 'row span3'
 
 		events:
 			'click input#submit': 'submit'
@@ -25,7 +25,7 @@ define (require) ->
 			@render()
 
 		render: ->
-			rtpl = tpls['home']()
+			rtpl = tpls['login']()
 			@$el.html rtpl
 
 			@

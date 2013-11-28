@@ -53,8 +53,6 @@ define (require) ->
 				@$('#results ul.results').append prev
 				@$('#results ul.results').append next
 
-			@facetedSearch.on 'unauthorized', => @publish 'unauthorized'
-
 			@facetedSearch.on 'all', -> console.log 'Module Env | FacetedSearch Event: ', arguments
 
 			@

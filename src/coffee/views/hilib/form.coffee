@@ -58,6 +58,22 @@ define (require) ->
 			@listenTo autosuggest, 'change', (changes) => @editor.set changes
 			@listenTo autosuggest, 'edit', (response) => @editor.set response
 
+			# ADVANCED 2
+			autosuggest = viewManager.show @el.querySelector('.advanced2-autosuggest-placeholder'), Views.Autosuggest,
+				value: ['Gijs', 'Jona']
+				config:
+					data: ['Gijs', 'Jona', 'Bram', 'Hayco', 'Martijn', 'Meindert']
+					settings:
+						placeholder: 'Select a colleague'
+						mutable: true
+						editable: true
+						defaultAdd: false
+
+
+			@listenTo autosuggest, 'change', (changes) => @editor.set changes
+			@listenTo autosuggest, 'add', (response) => @editor.set response
+			@listenTo autosuggest, 'edit', (response) => @editor.set response
+
 		renderEditablelists: ->
 			# DEFAULT
 			editablelist = viewManager.show @el.querySelector('.editablelist-placeholder'), Views.Editablelist,
