@@ -9,6 +9,7 @@ define (require) ->
 		Login: require 'views/login'
 		Highlighter: require 'views/hilib/highlighter'
 		Form: require 'views/hilib/form'
+		Pagination: require 'views/hilib/pagination'
 
 	class MainRouter extends Backbone.Router
 
@@ -29,6 +30,7 @@ define (require) ->
 			'login': 'login'
 			'hilib/form': 'form'
 			'hilib/highlighter': 'highlighter'
+			'hilib/pagination': 'pagination'
 
 		home: ->
 			viewManager.show '#main',  Views.Home
@@ -41,3 +43,6 @@ define (require) ->
 
 		form: ->
 			viewManager.show '#main', Views.Form
+
+		pagination: ->
+			viewManager.show '#main', Views.Pagination
