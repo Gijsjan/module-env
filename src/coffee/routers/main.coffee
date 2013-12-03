@@ -2,6 +2,7 @@ define (require) ->
 	Backbone = require 'backbone'
 	viewManager = require 'hilib/managers/view'
 	Pubsub = require 'hilib/mixins/pubsub'
+	history = require 'hilib/managers/history'
 
 	Views =
 		Home: require 'views/home'
@@ -14,7 +15,11 @@ define (require) ->
 		initialize: ->
 			_.extend @, Pubsub
 
-			@subscribe 'authorized', => @navigate '', trigger: true
+			@on 'route', => history.update()
+
+			@subscribe 'authorized', => 
+				url = history.last() ? ''
+				@navigate url, trigger: true
 			@subscribe 'unauthorized', =>
 				sessionStorage.clear()
 				@navigate 'login', trigger: true if Backbone.history.fragment isnt 'login' # Check for current route cuz unauthorized can be fired multiple times (from multiple sources)
