@@ -15,14 +15,17 @@ module.exports = (grunt) ->
 				src: 'images'
 				dest: 'compiled/images'
 			,
-				src: '/home/gijs/Projects/faceted-search'
+				src: '~/Projects/faceted-search'
 				dest: 'compiled/lib/faceted-search'
 			,
-				src: '/home/gijs/Projects/faceted-search/images'
+				src: '~/Projects/faceted-search/images'
 				dest: 'images/faceted-search'
 			,
-				src: '/home/gijs/Projects/hilib'
+				src: '~/Projects/hilib'
 				dest: 'compiled/lib/hilib'
+			,
+				src: '~/Projects/hilib/images'
+				dest: 'images/hilib'
 			]
 			stage: [{
 				src: 'images'
