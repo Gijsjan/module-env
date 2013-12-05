@@ -14,10 +14,9 @@ define (require) ->
 
 		render: ->
 			pBasic = new Pagination
-				rowCount: 4
-				resultCount: 17
-			@listenTo pBasic, 'prev', -> console.log 'prev'
-			@listenTo pBasic, 'next', -> console.log 'next'
+				rowCount: 12
+				resultCount: 500
+			@listenTo pBasic, 'change:pagenumber', (pagenumber) -> console.log pagenumber
 
 			h2 = document.createElement('h2')
 			h2.innerHTML = 'Basic'
@@ -25,11 +24,12 @@ define (require) ->
 			@el.appendChild pBasic.el
 
 			pAdvanced = new Pagination
-				rowCount: 12
-				resultCount: 500
-				step10: true
-				triggerPagenumber: true
-			@listenTo pAdvanced, 'change:pagenumber', (pagenumber) -> console.log pagenumber
+				rowCount: 4
+				resultCount: 17
+				step10: false
+				triggerPagenumber: false
+			@listenTo pAdvanced, 'prev', -> console.log 'prev'
+			@listenTo pAdvanced, 'next', -> console.log 'next'
 
 			h2 = document.createElement('h2')
 			h2.innerHTML = 'Advanced'
