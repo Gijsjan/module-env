@@ -39,19 +39,23 @@ define (require) ->
 					searchInAnnotations: false
 					searchInTranscriptions: false
 					textLayers: ['Diplomatic', 'Critical', 'Translation', 'Comments']
+				queryOptions:
+					resultRows: 12
 
 			@facetedSearch.on 'results:change', (results) =>
-				@$('#results ul.results').html ''
+				$results = @$('#results ol.results')
+
+				$results.html ''
 				_.each results.get('results'), (result) ->
-					@$('#results ul.results').append $('<li />').html result.name
+					$results.append $('<li />').html result.name
 				
 				prev = $('<button />').html 'prev'
 				prev.click (ev) => @facetedSearch.prev()
 				next = $('<button />').html 'next'
 				next.click (ev) => @facetedSearch.next()
 
-				@$('#results ul.results').append prev
-				@$('#results ul.results').append next
+				$results.append prev
+				$results.append next
 
 			@facetedSearch.on 'all', -> console.log 'Module Env | FacetedSearch Event: ', arguments
 
