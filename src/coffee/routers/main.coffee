@@ -10,6 +10,8 @@ define (require) ->
 		Highlighter: require 'views/hilib/highlighter'
 		Form: require 'views/hilib/form'
 		Pagination: require 'views/hilib/pagination'
+		Supertinyeditor: require 'views/hilib/supertinyeditor'
+		Modal: require 'views/hilib/modal'
 
 	class MainRouter extends Backbone.Router
 
@@ -31,6 +33,8 @@ define (require) ->
 			'hilib/form': 'form'
 			'hilib/highlighter': 'highlighter'
 			'hilib/pagination': 'pagination'
+			'hilib/supertinyeditor': 'supertinyeditor'
+			'hilib/modal': 'modal'
 
 		home: ->
 			viewManager.show '#main',  Views.Home
@@ -46,3 +50,9 @@ define (require) ->
 
 		pagination: ->
 			viewManager.show '#main', Views.Pagination
+
+		supertinyeditor: ->
+			viewManager.show '#main', Views.Supertinyeditor
+
+		modal: ->
+			viewManager.show '#main', Views.Modal

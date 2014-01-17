@@ -13,6 +13,8 @@ define (require) ->
 
 	class HilibForm extends Views.Base
 
+		className: 'hilib form'
+
 		initialize: ->
 			super
 
