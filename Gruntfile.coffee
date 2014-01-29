@@ -181,8 +181,8 @@ module.exports = (grunt) ->
 						endFile: 'wrap.end.js'
 
 		watch:
-			# options:
-			# 	livereload: true
+			options:
+				livereload: true
 			# 	nospawn: true
 			coffeetest:
 				files: 'test/**/*.coffee'
@@ -197,7 +197,10 @@ module.exports = (grunt) ->
 				files: ['src/stylus/**/*.styl']
 				tasks: ['stylus', 'concat']
 			css:
-				files: ['compiled/lib/hilib/touch/css', 'compiled/lib/faceted-search/stage/css/main.css']
+				files: ['compiled/lib/hilib/touch/css']
+				tasks: ['concat:css']
+			facetedsearch:
+				files: ['compiled/lib/faceted-search/build']
 				tasks: ['concat:css']
 
 
@@ -231,6 +234,7 @@ module.exports = (grunt) ->
 		'coffee:init'
 		'jade'
 		'stylus:compile'
+		'concat:css'
 		# 'shell:symlink_compiled_images' # Symlink from images/ to compiled/images
 		'createSymlinks:compiled'
 	]

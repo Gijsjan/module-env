@@ -31,14 +31,16 @@ define (require) ->
 			# 		sort: 'id'
 			@facetedSearch = new Views.FacetedSearch
 				el: @$('#placeholder')
-				baseUrl: config.baseUrl
-				searchPath: 'projects/16/search'
-				token: token.get()
-				textSearchOptions:
-					term: '*'
-					searchInAnnotations: false
-					searchInTranscriptions: false
-					textLayers: ['Diplomatic', 'Critical', 'Translation', 'Comments']
+				baseUrl: 'http://demo7.huygens.knaw.nl/rembench-backend/'
+				searchPath: 'search'
+				facetNameMap:
+					'date_range': 'Year range'
+				# token: token.get()
+				# textSearchOptions:
+				# 	term: '*'
+				# 	searchInAnnotations: false
+				# 	searchInTranscriptions: false
+				# 	textLayers: ['Diplomatic', 'Critical', 'Translation', 'Comments']
 				queryOptions:
 					resultRows: 12
 
